@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Tasación de Multas Ambientales (Colombia)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="jema-header">
+            <div class="logo-container">
+                <img src="https://www.jemaconsultoria.com/assets/images/logo.svg" alt="JEMA Consultoría" class="logo-img">
+            </div>
+            <div class="header-text">
+                <h1>Tasación de Multas Ambientales</h1>
+                <p class="subtitle">Metodología oficial (Resolución 2086 de 2010 / Decreto 1076 de 2015)</p>
+            </div>
+        </header>
+
+        <!-- Indicador de avance: barra + "Paso X de 5" + nombres -->
+        <div class="wizard-progress" id="wizard-progress">
+            <div class="progress-meta">
+                <span class="progress-label">Paso <strong id="current-step-num">1</strong> de <span id="total-steps">5</span></span>
+                <span class="progress-name" id="current-step-name">Beneficio Ilícito</span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="5"
+                 aria-valuenow="1" aria-label="Avance del formulario">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <ol class="stepper" id="stepper" aria-label="Pasos del formulario">
+                <li class="step active" data-step="1" aria-current="step">
+                    <span class="dot">1</span>
+                    <span class="step-name">Beneficio Ilícito</span>
+                </li>
+                <li class="step" data-step="2">
+                    <span class="dot">2</span>
+                    <span class="step-name">Temporalidad</span>
+                </li>
+                <li class="step" data-step="3">
+                    <span class="dot">3</span>
+                    <span class="step-name">Afectación Ambiental</span>
+                </li>
+                <li class="step" data-step="4">
+                    <span class="dot">4</span>
+                    <span class="step-name">Agravantes y Atenuantes</span>
+                </li>
+                <li class="step" data-step="5">
+                    <span class="dot">5</span>
+                    <span class="step-name">Costos y Capacidad</span>
+                </li>
+            </ol>
+        </div>
+
+        <form id="taxation-form" novalidate>
+            <!-- Paso 1: Beneficio Ilícito -->
+            <fieldset class="step-panel active" data-step="1">
+                <legend>1. Beneficio Ilícito (B)</legend>
+                <div class="form-group">
+                    <label for="y1">Ingresos directos ($ COP):</label>
+                    <input type="number" id="y1" value="0" min="0" step="any">
+                </div>
+                <div class="form-group">
+                    <label for="y2">Costos evitados ($ COP):</label>
+                    <input type="number" id="y2" value="0" min="0" step="any">
+                </div>
+                <div class="form-group">
+                    <label for="y3">Ahorros por retraso ($ COP):</label>
+                    <input type="number" id="y3" value="0" min="0" step="any">
+                </div>
+                <div class="form-group">
+                    <label for="p">Capacidad de detección de la autoridad (p):</label>
+                    <select id="p">
+                        <option value="0.40">Baja (0.40)</option>
+                        <option value="0.45" selected>Media (0.45)</option>
+                        <option value="0.50">Alta (0.50)</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <!-- Paso 2: Factor de Temporalidad -->
+            <fieldset class="step-panel" data-step="2">
+                <legend>2. Factor de Temporalidad (&alpha;)</legend>
+                <div class="form-group">
+                    <label for="tipo-hecho">Tipo de infracción:</label>
+                    <select id="tipo-hecho">
+                        <option value="instantaneo" selected>Instantáneo (&alpha; = 1)</option>
+                        <option value="continuo">Continuo o Discontinuo</option>
+                    </select>
+                </div>
+                <div class="form-group" id="group-dias" style="display: none;">
+                    <label for="dias">Duración de la infracción (días <em>d</em>):</label>
+                    <input type="number" id="dias" value="1" min="1">
+                </div>
+            </fieldset>
+
+            <!-- Paso 3: Afectación Ambiental -->
+            <fieldset class="step-panel" data-step="3">
+                <legend>3. Grado de Afectación Ambiental (<em>i</em>)</legend>
+                <div class="form-group">
+                    <label for="i-value">Valor de afectación / riesgo (<em>i</em>):</label>
+                    <input type="number" id="i-value" value="1.0" min="0" step="0.01">
+                    <small>Rango técnico habitual definido en la evaluación ambiental.</small>
+                </div>
+            </fieldset>
+
+            <!-- Paso 4: Agravantes y Atenuantes -->
+            <fieldset class="step-panel" data-step="4">
+                <legend>4. Agravantes y Atenuantes (<em>A</em>)</legend>
+                <div class="form-group">
+                    <label for="agravantes">Suma de agravantes (<em>A</em><sub>grav</sub>):</label>
+                    <input type="number" id="agravantes" value="0.0" min="0" max="0.7" step="0.05">
+                </div>
+                <div class="form-group">
+                    <label for="atenuantes">Suma de atenuantes (<em>A</em><sub>aten</sub>):</label>
+                    <input type="number" id="atenuantes" value="0.0" min="0" max="0.6" step="0.05">
+                </div>
+            </fieldset>
+
+            <!-- Paso 5: Costos y Capacidad Socioeconómica -->
+            <fieldset class="step-panel" data-step="5">
+                <legend>5. Costos y Capacidad Socioeconómica</legend>
+                <div class="form-group">
+                    <label for="ca">Costos asociados (<em>Ca</em> en COP):</label>
+                    <input type="number" id="ca" value="0" min="0" step="any">
+                </div>
+                <div class="form-group">
+                    <label for="cs">Capacidad socioeconómica (<em>Cs</em> - Ponderador):</label>
+                    <select id="cs">
+                        <option value="0.25">Microempresa (0.25)</option>
+                        <option value="0.50">Pequeña empresa (0.50)</option>
+                        <option value="0.75" selected>Mediana empresa (0.75)</option>
+                        <option value="1.00">Grande empresa / Infractor alto (1.00)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="smmlv">Valor SMMLV vigente ($ COP):</label>
+                    <input type="number" id="smmlv" value="1750905" min="1">
+                    <small>Salario Mínimo Legal Mensual Vigente 2026: $1.750.905 (Decreto 1469 de 2025, mantenido por el Decreto 159 de 2026). Usa el SMMLV del año del hecho sancionable.</small>
+                </div>
+            </fieldset>
+
+            <p class="form-error hidden" id="form-error" role="alert"></p>
+
+            <!-- Navegación del asistente -->
+            <div class="wizard-nav">
+                <button type="button" id="prev-btn" class="btn btn-secondary">← Anterior</button>
+                <button type="button" id="next-btn" class="btn btn-primary">Siguiente →</button>
+                <button type="button" id="calcular-btn" class="btn btn-primary hidden">Calcular Multa</button>
+            </div>
+        </form>
+
+        <!-- Paso 6: Resultados -->
+        <section id="results-section" class="results-panel hidden">
+            <h2>Memoria de Cálculo y Resultados</h2>
+            <div class="result-card">
+                <div class="result-item">
+                    <span>Beneficio Ilícito (B):</span>
+                    <strong id="res-b">$0</strong>
+                </div>
+                <div class="result-item">
+                    <span>Factor de Temporalidad (&alpha;):</span>
+                    <strong id="res-alpha">1.00</strong>
+                </div>
+                <div class="result-item">
+                    <span>Ajuste Agravantes/Atenuantes (1 + <em>A</em>):</span>
+                    <strong id="res-a">1.00</strong>
+                </div>
+                <div class="result-item highlight">
+                    <span>Multa Total Estimada ($ COP):</span>
+                    <strong id="res-total">$0</strong>
+                </div>
+            </div>
+            <div class="wizard-nav">
+                <button type="button" id="back-to-form-btn" class="btn btn-secondary">← Volver</button>
+                <button type="button" id="recalcular-btn" class="btn btn-primary">Recalcular</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
